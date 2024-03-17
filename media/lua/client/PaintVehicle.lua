@@ -33,6 +33,7 @@ PaintVehicle.onPainting = function(playerObj, vehicle, newSkinIndex, paintBrush,
                 enough_paintCan = false
             end
         end
+
         if paintBrush and enough_paintCan then
             ISWorldObjectContextMenu.equip(playerObj, playerObj:getPrimaryHandItem(), paintBrush, true, false)
                                            -- player, HandItem, itemToEquip, asPrimayHand, asTwoHand,
@@ -83,19 +84,29 @@ PaintVehicle.createPaintMenuOpt = function(paintMenu, playerObj, context, vehicl
     local playerInv = playerObj:getInventory()
     local paintBrush = playerInv:getFirstTypeRecurse("Paintbrush")
     local paintItems = {}
-    local haveAllPaintCan = true
+    local enough_paintCan = true
     local paintMenuAvailable = false
 
     for paint_type, paint_uses in pairs(paintTable) do
-        local paint_can = playerInv:getFirstTypeRecurse(paint_type)
-        if not paint_can then
-            haveAllPaintCan = false
+        local paint_can_list = playerInv:getAllTypeRecurse(paint_type)
+        local paint_can = nil
+        for i=0, paint_can_list:size() -1 do
+            local pcan = paint_can_list:get(i)
+            if pcan and round(pcan:getUsedDelta() / pcan:getUseDelta()) < paint_uses then
+                paint_can = pcan
+                break
+            end
         end
-        table.insert(paintItems, {
-            name = paint_type,
-            paintCan = paint_can,
-            uses = paint_uses,
-        })
+
+        if paint_can then
+            table.insert(paintItems, {
+                name = paint_type,
+                paintCan = paint_can,
+                uses = paint_uses,
+            })
+        else
+            enough_paintCan = false
+        end
     end
 
     writeOpt = paintMenu:addOptionOnTop(optionName, 
@@ -105,7 +116,7 @@ PaintVehicle.createPaintMenuOpt = function(paintMenu, playerObj, context, vehicl
                                         skinIndex,
                                         paintBrush,
                                         paintItems)
-    if vehicle and paintBrush and haveAllPaintCan then
+    if vehicle and paintBrush and enough_paintCan then
         paintMenuAvailable = true
     else
         writeOpt.toolTip = ISWorldObjectContextMenu.addToolTip()
@@ -149,11 +160,23 @@ PaintVehicle.createCleanMenuOpt = function(paintMenu, playerObj, context, vehicl
     local playerInv = playerObj:getInventory()
 
     local cleaner = PaintVehicle.getFirstTypeCleaner(playerObj)
-    local bleach = playerInv:getFirstTypeRecurse("Bleach")
+    local bleach_list = playerInv:getAllTypeRecurse("Bleach")
+    local bleach = nil
+
+    for i=0, bleach_list:size() - 1 do
+        local blch = bleach_list:get(i)
+        if blch:getThirstChange() < - (uses * UNIT_BLEACH) then
+            bleach = blch
+            break
+        end
+    end
+
     local cleanMenuAvailable = false
     if not uses then
         uses = 1
     end
+
+    
 
     cleanOpt = paintMenu:addOptionOnTop(optionName,
                                         playerObj, 
@@ -188,10 +211,11 @@ PaintVehicle.createCleanMenuOpt = function(paintMenu, playerObj, context, vehicl
         end
 
         local bleachScriptItem = ScriptManager.instance:getItem("Base.Bleach")
+        local bleach_unit = bleach:getThirstChange() / UNIT_BLEACH
         if bleach and bleach:getThirstChange() < (uses * UNIT_BLEACH) then  --thirst is negative floot
-            desc_clean = desc_clean .. PaintVehicle.ghs.. bleachScriptItem:getDisplayName() .. " <LINE> "
+            desc_clean = desc_clean .. PaintVehicle.ghs.. bleachScriptItem:getDisplayName() .. " " .. bleach_unit .. "/".. uses .." <LINE> "
         else
-            desc_clean = desc_clean .. PaintVehicle.bhs.. bleachScriptItem:getDisplayName() .. " <LINE> "
+            desc_clean = desc_clean .. PaintVehicle.bhs.. bleachScriptItem:getDisplayName() .. " " .. bleach_unit .. "/".. uses .. " <LINE> "
             cleanOpt.onSelect = nil
             cleanOpt.notAvailable = true
         end
