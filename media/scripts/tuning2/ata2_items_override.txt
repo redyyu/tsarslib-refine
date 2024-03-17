@@ -1,0 +1,18 @@
+module Base
+{
+
+    item ATAProtectionWheelsChain {
+        Weight = 3.0,
+        Type = Normal,
+        DisplayName = ATAProtectionWheelsItem,
+        DisplayCategory = VehicleMaintenance,
+        Icon = ATAProtectionWheelsItem,
+        ConditionMax = 100,
+        /* add VehicleType = 1, (or 2, 3) can display condition value like 100/100, but also add affix word for vehicle types. */
+        MechanicsItem = TRUE,
+        Tooltip = Tooltip_item_tuning,
+        ataProtection = TireFrontLeft;TireFrontRight;TireRearLeft;TireRearRight,
+        WorldStaticModel = FishingNet,
+    }
+
+}

@@ -1,0 +1,6 @@
+name=Tsar's Common Library Refine
+poster=preview.png
+id=tsarslib_refine
+versionMin=41.73
+description=Patch and Refine for Common library for Tsar's Common Library v.2.07.
+require=tsarslib

@@ -1,0 +1,33 @@
+-- require "Tuning2/ISTuningMenu"
+
+-- function ISVehicleMenu.showRadialMenuOutside(playerObj)
+--     ISTuningMenu.old_ISVehicleMenu_showRadialMenuOutside(playerObj)
+--     if playerObj:getVehicle() then return end
+--     local playerIndex = playerObj:getPlayerNum()
+--     local menu = getPlayerRadialMenu(playerIndex)
+--     if menu:isReallyVisible() then
+--         if menu.joyfocus then
+--             setJoypadFocus(playerIndex, nil)
+--         end
+--         menu:undisplay()
+--         return
+--     end
+--     local vehicle = ISVehicleMenu.getVehicleToInteractWith(playerObj)
+--     if vehicle then
+--         -- Добавление меню для тюнинга2.0
+--         if ATA2TuningTable[vehicle:getScript():getName()] then
+--             menu:addSlice(getText("ContextMenu_OpenTuningMenu"), getTexture("media/ui/tuning2/vehicle_tuning.png"), ISTuningMenu.onTuning, playerObj, vehicle)
+--         end
+--         -- Функционал палатки
+--         local part = vehicle:getPartById("ATA2RoofTent");
+--         if part and part:getInventoryItem() then
+--             if part:getModData().tuning2 then
+--                 if part:getModData().tuning2.status == "close" then
+--                     menu:addSlice(getText("ContextMenu_OpenTent"), getTexture("media/ui/commonlibrary/UI_commonlib_open_tent.png"), ISTuningMenu.openTent, playerObj, vehicle, part, true);
+--                 elseif part:getModData().tuning2.status == "open" then
+--                     menu:addSlice(getText("ContextMenu_CloseTent"), getTexture("media/ui/commonlibrary/UI_commonlib_close_tent.png"), ISTuningMenu.openTent, playerObj, vehicle, part, false);
+--                 end
+--             end
+--         end
+--     end
+-- end

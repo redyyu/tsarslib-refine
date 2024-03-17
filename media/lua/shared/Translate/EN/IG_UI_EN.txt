@@ -1,0 +1,4 @@
+IGUI_EN = {
+    IGUI_VehiclePartATABumperRear = "Rear Bumper",
+    IGUI_VehiclePartATA2BumperRear = "Rear Bumper",
+}

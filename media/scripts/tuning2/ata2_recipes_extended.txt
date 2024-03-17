@@ -1,0 +1,199 @@
+module ATA2
+{
+    imports {
+	    Base,
+	}
+    
+    recipe Make Roof Lights {
+        destroy Torch,
+        MetalBar,
+        SmallSheetMetal,
+        BlowTorch=5,
+        keep WeldingMask,
+
+        Result: ATA2.ATARoofLightItem,
+        Time: 150.0,
+        Sound: BlowTorch,
+        AnimNode: BlowTorch,
+        Prop1: BlowTorch,
+        Prop2: Source=1,
+        SkillRequired: MetalWelding=4,
+        Category: Tuning,
+    }
+
+    recipe Make Chain {
+        Wire=50,
+        ScrapMetal=10,
+        BlowTorch=10,
+        WeldingRods=20,
+        keep WeldingMask,
+
+        Result: ATA2.ATAProtectionWheelsChain,
+        Time: 500.0,
+        Sound: BlowTorch,
+        AnimNode: BlowTorch,
+        Prop1: BlowTorch,
+        Prop2: Source=1,
+        SkillRequired: MetalWelding=6,
+        Category: Tuning,
+    }
+
+
+    /* Override */
+    recipe Cut ATABullbarPoliceItem1 {
+        ATABullbarPoliceItem1=1,
+        BlowTorch=2,
+        keep WeldingMask,
+        Result:MetalPipe=4,
+        Time:350.0,
+        Category:Welding,
+        SkillRequired:MetalWelding=2,
+        OnCreate:Recipe.OnCreate.CutATAUnusableMetal,
+        OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+        NeedToBeLearn:false,
+
+        Override:true,
+        IsHidden:true,
+    }
+
+    recipe Cut ATABullbar1Item {
+        ATABullbar1Item=1,
+        BlowTorch=2,
+        keep WeldingMask,
+        Result:MetalPipe=4,
+        Time:350.0,
+        Category:Welding,
+        SkillRequired:MetalWelding=2,
+        OnCreate:Recipe.OnCreate.CutATAUnusableMetal,
+        OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+        NeedToBeLearn:false,
+
+        Override:true,
+        IsHidden:true,
+    }
+
+    recipe Cut ATABullbar2Item {
+       ATABullbar2Item=1,
+       BlowTorch=4,
+       keep WeldingMask,
+       Result:MetalPipe=6,
+       Time:350.0,
+       Category:Welding,
+       SkillRequired:MetalWelding=2,
+       OnCreate:Recipe.OnCreate.CutATAUnusableMetal,
+       OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+       NeedToBeLearn:false,
+
+       Override:true,
+       IsHidden:true,
+    }
+
+    recipe Cut ATABullbar3Item {
+       ATABullbar3Item=1,
+       BlowTorch=4,
+       keep WeldingMask,
+       Result:MetalPipe=6,
+       Time:350.0,
+       Category:Welding,
+       SkillRequired:MetalWelding=2,
+       OnCreate:Recipe.OnCreate.CutATAUnusableMetal,
+       OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+       NeedToBeLearn:false,
+
+       Override:true,
+       IsHidden:true,
+    }
+
+    recipe Cut ATAFendersWideItem {
+        ATAFendersWideItem=1,
+        BlowTorch=3,
+        keep WeldingMask,
+        Result:UnusableMetal=4,
+        Time:350.0,
+        Category:Welding,
+        SkillRequired:MetalWelding=2,
+        OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+        NeedToBeLearn:false,
+
+        Override:true,
+        IsHidden:true,
+    }
+
+
+    recipe Cut ATASkirtsSideItem {
+        ATASkirtsSideItem=1,
+        BlowTorch=3,
+        keep WeldingMask,
+        Result:UnusableMetal=4,
+        Time:350.0,
+        Category:Welding,
+        SkillRequired:MetalWelding=2,
+        OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+        NeedToBeLearn:false,
+
+        Override:true,
+        IsHidden:true,
+    }
+
+    recipe Cut ATAFrontRoofLightItem {
+        ATAFrontRoofLightItem=1,
+        BlowTorch=3,
+        keep WeldingMask,
+        Result:UnusableMetal=4,
+        Time:350.0,
+        Category:Welding,
+        SkillRequired:MetalWelding=2,
+        OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+        NeedToBeLearn:false,
+
+        Override:true,
+        IsHidden:true,
+    }
+
+    recipe Cut ATASpoilerFrontItem {
+        ATASpoilerFrontItem=1,
+        BlowTorch=3,
+        keep WeldingMask,
+        Result:UnusableMetal=4,
+        Time:350.0,
+        Category:Welding,
+        SkillRequired:MetalWelding=2,
+        OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+        NeedToBeLearn:false,
+
+        Override:true,
+        IsHidden:true,
+    }
+
+    recipe Cut ATASpoilerRear1Item {
+        ATASpoilerRear1Item=1,
+        BlowTorch=3,
+        keep WeldingMask,
+        Result:SmallSheetMetal=4,
+        Time:350.0,
+        Category:Welding,
+        SkillRequired:MetalWelding=2,
+        OnCreate:Recipe.OnCreate.CutATAUnusableMetal,
+        OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+        NeedToBeLearn:false,
+
+        Override:true,
+        IsHidden:true,
+    }
+
+    recipe Cut ATASpoilerRear2Item {
+        ATASpoilerRear2Item=1,
+        BlowTorch=3,
+        keep WeldingMask,
+        Result:SmallSheetMetal=5,
+        Time:350.0,
+        Category:Welding,
+        SkillRequired:MetalWelding=2,
+        OnCreate:Recipe.OnCreate.CutATAUnusableMetal,
+        OnGiveXP:Recipe.OnGiveXP.MetalWelding10,
+        NeedToBeLearn:false,
+
+        Override:true,
+        IsHidden:true,
+    }
+}
