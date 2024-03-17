@@ -43,7 +43,11 @@ end
 
 function ISPaintVehicleAction:perform()
 	for _, paint in ipairs(self.paintItems) do
-        paint.paintCan:setUsedDelta(paint.paintCan:getUsedDelta() - (paint.paintCan:getUseDelta() * paint.uses))
+        local used_total = paint.paintCan:getUsedDelta() - (paint.paintCan:getUseDelta() * paint.uses)
+        paint.paintCan:setUsedDelta(used_total)
+        if used_total <= 0 then
+            paint.paintCan:Use()
+        end
     end
 
     self.vehicle:setSkinIndex(self.skinIndex)

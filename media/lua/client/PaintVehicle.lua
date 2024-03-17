@@ -23,13 +23,13 @@ PaintVehicle.getFirstTypeCleaner = function(playerObj)
 end
 
 
-PaintVehicle.onPainting = function(playerObj, vehicle, newSkinIndex, paintBrush, paintItems)
+PaintVehicle.onPainting = function(playerObj, vehicle, newSkinIndex, paintBrush, paintItems, area)
     if paintBrush and paintItems then
         local enough_paintCan = true
         local paintCan = nil
         for _, paint in ipairs(paintItems) do
             paintCan = paint.paintCan
-            if not paintCan or round(paintCan:getUsedDelta() / paintCan:getUseDelta()) < paint.uses then
+            if not paintCan or math.floor(paintCan:getUsedDelta() / paintCan:getUseDelta()) < paint.uses then
                 enough_paintCan = false
             end
         end
@@ -38,21 +38,21 @@ PaintVehicle.onPainting = function(playerObj, vehicle, newSkinIndex, paintBrush,
             ISWorldObjectContextMenu.equip(playerObj, playerObj:getPrimaryHandItem(), paintBrush, true, false)
                                            -- player, HandItem, itemToEquip, asPrimayHand, asTwoHand,
             if paintCan then
-                ISWorldObjectContextMenu.equip(playerObj, playerObj:getSecondaryHandItem(), paintCan, true, false)
+                ISWorldObjectContextMenu.equip(playerObj, playerObj:getSecondaryHandItem(), paintCan, false, false)
             end
-            ISTimedActionQueue.add(ISPathFindAction:pathToVehicleArea(playerObj, vehicle, "Engine"))
-            ISTimedActionQueue.add(ISPaintVehicleAction:new(playerObj, vehicle, "Engine", newSkinIndex, paintBrush, paintItems))
+            ISTimedActionQueue.add(ISPathFindAction:pathToVehicleArea(playerObj, vehicle, area))
+            ISTimedActionQueue.add(ISPaintVehicleAction:new(playerObj, vehicle, area, newSkinIndex, paintBrush, paintItems))
         end
     end
 end
 
-PaintVehicle.onCleaning = function(playerObj, vehicle, newSkinIndex, cleaner, bleach, uses)
+PaintVehicle.onCleaning = function(playerObj, vehicle, newSkinIndex, cleaner, bleach, uses, area)
     if cleaner and bleach then
         ISWorldObjectContextMenu.equip(playerObj, playerObj:getPrimaryHandItem(), cleaner, true, false)
                                        -- player, HandItem, itemToEquip, asPrimayHand, asTwoHand,
         ISWorldObjectContextMenu.equip(playerObj, playerObj:getSecondaryHandItem(), bleach, false, false)
-        ISTimedActionQueue.add(ISPathFindAction:pathToVehicleArea(playerObj, vehicle, "Engine"))
-        ISTimedActionQueue.add(ISCleanVehicleAction:new(playerObj, vehicle, "Engine", newSkinIndex, cleaner, bleach, uses or 1, UNIT_BLEACH))
+        ISTimedActionQueue.add(ISPathFindAction:pathToVehicleArea(playerObj, vehicle, area))
+        ISTimedActionQueue.add(ISCleanVehicleAction:new(playerObj, vehicle, area, newSkinIndex, cleaner, bleach, uses or 1, UNIT_BLEACH))
     end
 end
 
@@ -80,7 +80,7 @@ PaintVehicle.getOrCreatePaintMenu = function(context, optName)
 end
 
 
-PaintVehicle.createPaintMenuOpt = function(paintMenu, playerObj, context, vehicle, skinIndex, optionName, paintTable)
+PaintVehicle.createPaintMenuOpt = function(paintMenu, playerObj, context, vehicle, skinIndex, optionName, paintTable, area)
     local playerInv = playerObj:getInventory()
     local paintBrush = playerInv:getFirstTypeRecurse("Paintbrush")
     local paintItems = {}
@@ -92,7 +92,7 @@ PaintVehicle.createPaintMenuOpt = function(paintMenu, playerObj, context, vehicl
         local paint_can = nil
         for i=0, paint_can_list:size() -1 do
             local pcan = paint_can_list:get(i)
-            if pcan and round(pcan:getUsedDelta() / pcan:getUseDelta()) < paint_uses then
+            if pcan and math.floor(pcan:getUsedDelta() / pcan:getUseDelta()) >= paint_uses then
                 paint_can = pcan
                 break
             end
@@ -105,6 +105,11 @@ PaintVehicle.createPaintMenuOpt = function(paintMenu, playerObj, context, vehicl
                 uses = paint_uses,
             })
         else
+            table.insert(paintItems, {
+                name = paint_type,
+                paintCan = nil,
+                uses = paint_uses,
+            })
             enough_paintCan = false
         end
     end
@@ -115,7 +120,8 @@ PaintVehicle.createPaintMenuOpt = function(paintMenu, playerObj, context, vehicl
                                         vehicle, 
                                         skinIndex,
                                         paintBrush,
-                                        paintItems)
+                                        paintItems,
+                                        area or 'Engine')
     if vehicle and paintBrush and enough_paintCan then
         paintMenuAvailable = true
     else
@@ -135,7 +141,7 @@ PaintVehicle.createPaintMenuOpt = function(paintMenu, playerObj, context, vehicl
             local paintCan = paint.paintCan
             local remain_uses = 0
             if paintCan then
-                remain_uses = round(paintCan:getUsedDelta() / paintCan:getUseDelta())
+                remain_uses = math.floor(paintCan:getUsedDelta() / paintCan:getUseDelta())
             end
 
             local paintScriptItem = ScriptManager.instance:getItem(paint.name)
@@ -156,7 +162,7 @@ PaintVehicle.createPaintMenuOpt = function(paintMenu, playerObj, context, vehicl
 end
 
 
-PaintVehicle.createCleanMenuOpt = function(paintMenu, playerObj, context, vehicle, skinIndex, optionName, uses)
+PaintVehicle.createCleanMenuOpt = function(paintMenu, playerObj, context, vehicle, skinIndex, optionName, uses, area)
     local playerInv = playerObj:getInventory()
 
     local cleaner = PaintVehicle.getFirstTypeCleaner(playerObj)
@@ -165,7 +171,7 @@ PaintVehicle.createCleanMenuOpt = function(paintMenu, playerObj, context, vehicl
 
     for i=0, bleach_list:size() - 1 do
         local blch = bleach_list:get(i)
-        if blch:getThirstChange() < - (uses * UNIT_BLEACH) then
+        if blch:getThirstChange() < (uses * UNIT_BLEACH) then
             bleach = blch
             break
         end
@@ -176,8 +182,6 @@ PaintVehicle.createCleanMenuOpt = function(paintMenu, playerObj, context, vehicl
         uses = 1
     end
 
-    
-
     cleanOpt = paintMenu:addOptionOnTop(optionName,
                                         playerObj, 
                                         PaintVehicle.onCleaning,
@@ -185,9 +189,10 @@ PaintVehicle.createCleanMenuOpt = function(paintMenu, playerObj, context, vehicl
                                         skinIndex,
                                         cleaner,
                                         bleach,
-                                        uses)
+                                        uses,
+                                        area or 'Engine')
 
-    if vehicle and cleaner and bleach and bleach:getThirstChange() < - (uses * UNIT_BLEACH) then
+    if vehicle and cleaner and bleach and bleach:getThirstChange() <= (uses * UNIT_BLEACH) then
         --thirst is negative floot, 0.05 is for 1 unit same with clean Blood.
         cleanMenuAvailable = true
     else
@@ -200,21 +205,23 @@ PaintVehicle.createCleanMenuOpt = function(paintMenu, playerObj, context, vehicl
         local towelScriptItem = ScriptManager.instance:getItem("Base.BathTowel")
 
         if cleaner then
-            desc_clean = desc_clean ..  PaintVehicle.ghs .. cleaner:getDisplayName() .. " <LINE> "
+            desc_clean = desc_clean .. PaintVehicle.ghs .. cleaner:getDisplayName() .. " <LINE> "
         else
             local cleaners_name = mopScriptItem:getDisplayName() .. "/".. broomScriptItem:getDisplayName() .. "/" 
             cleaners_name = cleaners_name .. dishclothmopScriptItem:getDisplayName() .. "/" .. towelScriptItem:getDisplayName()
 
-            desc_clean = desc_clean ..  PaintVehicle.bhs .. cleaners_name .. " <LINE> "
+            desc_clean = desc_clean .. PaintVehicle.bhs .. cleaners_name .. " <LINE> "
             cleanOpt.onSelect = nil
             cleanOpt.notAvailable = true
         end
 
         local bleachScriptItem = ScriptManager.instance:getItem("Base.Bleach")
-        local bleach_unit = bleach:getThirstChange() / UNIT_BLEACH
-        if bleach and bleach:getThirstChange() < (uses * UNIT_BLEACH) then  --thirst is negative floot
+        local bleach_unit = 0
+        if bleach and bleach:getThirstChange() <= (uses * UNIT_BLEACH) then  --thirst is negative floot
+            bleach_unit = bleach:getThirstChange() / UNIT_BLEACH
             desc_clean = desc_clean .. PaintVehicle.ghs.. bleachScriptItem:getDisplayName() .. " " .. bleach_unit .. "/".. uses .." <LINE> "
         else
+            bleach_unit = bleach and (bleach:getThirstChange() / UNIT_BLEACH) or 0
             desc_clean = desc_clean .. PaintVehicle.bhs.. bleachScriptItem:getDisplayName() .. " " .. bleach_unit .. "/".. uses .. " <LINE> "
             cleanOpt.onSelect = nil
             cleanOpt.notAvailable = true

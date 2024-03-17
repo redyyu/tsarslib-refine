@@ -7,7 +7,7 @@ ISCleanVehicleAction = ISBaseTimedAction:derive("ISCleanVehicleAction")
 function ISCleanVehicleAction:isValid()
     return self.vehicle:isInArea(self.area, self.character) and 
            self.bleach and 
-           self.bleach:getThirstChange() < self.thirstNeed  --thirst is negative floot.
+           self.bleach:getThirstChange() <= self.thirstNeed  --thirst is negative floot.
 end
 
 function ISCleanVehicleAction:waitToStart()
