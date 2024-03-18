@@ -1,8 +1,28 @@
-require "TimedActions/ISInstallTuningVehiclePart"
+require "Tuning2/TimedActions/ISInstallTuningVehiclePart"
 
+local function ReduceUses(inventoryItem, availableUses)
+    inventoryItem:setUsedDelta(inventoryItem:getUsedDelta() - inventoryItem:getUseDelta() * availableUses)
+    if inventoryItem:getDrainableUsesInt() < 0 then inventoryItem:setUsedDelta(0.0f) end
+end
+
+local RandomSoundPerform = {
+    "BuildMetalStructureSmall",
+    "BuildMetalStructureMedium",
+    "BuildMetalStructureSmallScrap",
+    "BuildMetalStructureLargePoleFence",
+    "BuildMetalStructureSmallPoleFence",
+    "BuildMetalStructureLargeWiredFence",
+    "BuildMetalStructureSmallWiredFence",
+    "BuildMetalStructureWallFrame",
+}
+
+
+-- The bug with broken item is cause by
+-- and getBestCondition() will not get broken item, that will cause item as `nil`.
+-- nil item could not `:IsDrainable()`.
+-- also could not transmit first item condition as `nil` to part item, that will cause error.
 
 function ISInstallTuningVehiclePart:perform()
--- print("ISInstallTuningVehiclePart:perform")
     local inventory = self.character:getInventory()
 
     local firstCondition = nil
@@ -11,9 +31,15 @@ function ISInstallTuningVehiclePart:perform()
         
         for itemName, num in pairs(self.use) do
             itemName = itemName:gsub("__", ".")
-            local item = inventory:getBestCondition(itemName, TSAR.predicateNotBroken)
+            local item = inventory:getBestCondition(itemName)
+            print("=====================ITEM=======================")
+            print(item)
+            print(itemName)
             if not firstCondition and item then
                 firstCondition = item:getCondition()
+                print("=====================firstCondition=======================")
+                print(itemName)
+                print(firstCondition)
             end
             if item then
                 if item:IsDrainable() then
@@ -45,7 +71,7 @@ function ISInstallTuningVehiclePart:perform()
         modelName = self.modelName,
         condition = firstCondition
     }
-    
+
     sendClientCommand(self.character, 'atatuning2', 'installTuning', args)
 
     local pdata = getPlayerData(self.character:getPlayerNum());

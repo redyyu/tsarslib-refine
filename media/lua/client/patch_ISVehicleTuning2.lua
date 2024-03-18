@@ -1,3 +1,8 @@
+
+-- The bug with broken item is cause by `firstCondition = nil` in `ISInstallTuningVehiclePart`
+-- when transmit first item condition to part item, that will cause error.
+
+
 require "Tuning2/ISVehicleTuning2"
 
 
@@ -7,7 +12,7 @@ function ISVehicleTuning2:getAvailableItemsType(RecipeItem)
     RecipeItem = RecipeItem or recipeListBox.items[recipeListBox.selected].item
     if RecipeItem.use then
         for _, item_tbl in pairs(RecipeItem.use) do
-            local full_type = item_tbl.full_type
+            local full_type = item_tbl.fullType
             for _, container in pairs(self.containerListLua) do
                 if item_tbl.isDrainable then
                     local array = container:FindAll(full_type)
@@ -23,7 +28,7 @@ function ISVehicleTuning2:getAvailableItemsType(RecipeItem)
                     end
                     result[full_type] = (result[full_type] or 0) + count
                 else
-                    -- local arraySize = container:FindAll(full_type):size()
+                    -- local count = container:FindAll(full_type):size()
                     local count = container:getCountTypeEval(full_type, TSAR.predicateNotBroken)
                     result[full_type] = (result[full_type] or 0) + count
                 end
@@ -32,7 +37,7 @@ function ISVehicleTuning2:getAvailableItemsType(RecipeItem)
     end
     if RecipeItem.tools then
         for _, item_tbl in pairs(RecipeItem.tools) do
-            local full_type = item_tbl.full_type
+            local full_type = item_tbl.fullType
             for _, container in pairs(self.containerListLua) do
                 -- local arraySize = container:FindAll(full_type):size()
                 local count = container:getCountTypeEval(full_type, TSAR.predicateNotBroken)
@@ -48,10 +53,11 @@ function ISVehicleTuning2:getAllRequiredItems(RecipeItem)
     local result = {}
     if RecipeItem.use then
         for _, itemInList in pairs(RecipeItem.use) do
-            local fullType = itemInList.fullType
+            local full_type = itemInList.fullType
             local count = 0
             for _, container in pairs(self.containerListLua) do
-                local items_array = container:getAllTypeEval(fullType, TSAR.predicateNotBroken)
+                local items_array = container:FindAll(full_type)
+                local items_array = container:getAllTypeEval(full_type, TSAR.predicateNotBroken)
                 for i=0, items_array:size()-1 do
                     local itemFromInventory = items_array:get(i)
                     if itemFromInventory:IsDrainable() then
@@ -76,10 +82,10 @@ function ISVehicleTuning2:getAllRequiredItems(RecipeItem)
     end
     if RecipeItem.tools then
         for _, itemInList in pairs(RecipeItem.tools) do
-            local fullType = itemInList.fullType
+            local full_type = itemInList.fullType
             local count = 0
             for _, container in pairs(self.containerListLua) do
-                local items_array = container:getAllTypeEval(fullType, TSAR.predicateNotBroken)
+                local items_array = container:getAllTypeEval(full_type, TSAR.predicateNotBroken)
                 for i=0, items_array:size()-1 do
                     result[#result+1] = items_array:get(i)
                     count = count + 1
