@@ -8,16 +8,12 @@ PaintVehicle.bhs = " <RGB:" .. getCore():getBadHighlitedColor():getR() .. "," ..
 
 local UNIT_BLEACH = -0.05
 
-local predicateNotBroken = function(item)
-	return not item:isBroken()
-end
-
 
 PaintVehicle.getFirstTypeCleaner = function(playerObj)
     local playerInv = playerObj:getInventory()
     
 	return playerInv:getFirstTypeRecurse("Mop") or
-           playerInv:getFirstTypeEvalRecurse("Broom", predicateNotBroken) or
+           playerInv:getFirstTypeEvalRecurse("Broom", TSAR.predicateNotBroken) or
            playerInv:getFirstTypeRecurse("DishCloth") or
            playerInv:getFirstTypeRecurse("BathTowel")
 end
