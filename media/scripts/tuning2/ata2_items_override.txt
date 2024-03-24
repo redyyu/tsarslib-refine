@@ -2,7 +2,7 @@ module Base
 {
 
     item ATAProtectionWheelsChain {
-        Weight = 3.0,
+        Weight = 4.5,
         Type = Normal,
         DisplayName = ATAProtectionWheelsItem,
         DisplayCategory = VehicleMaintenance,

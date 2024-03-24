@@ -22,10 +22,10 @@ module ATA2
     }
 
     recipe Make Chain {
-        Wire=50,
-        ScrapMetal=10,
+        Wire=25,
+        ScrapMetal=20,
         BlowTorch=10,
-        WeldingRods=20,
+        WeldingRods=10,
         keep WeldingMask,
 
         Result: ATA2.ATAProtectionWheelsChain,
